@@ -5,7 +5,7 @@ public class LineItem {
     private double price;
     private int quantity;
 
-    public LineItem(String description, double pricep, int quantity) {
+    public LineItem(String description, double price, int quantity) {
         super();
         this.description = description;
         this.price = price;
