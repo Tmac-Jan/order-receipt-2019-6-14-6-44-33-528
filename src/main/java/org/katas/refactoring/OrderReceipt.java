@@ -1,6 +1,7 @@
 package org.katas.refactoring;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OrderReceipt {
@@ -19,28 +20,38 @@ public class OrderReceipt {
 
     printNameAndAddressOfCustomer(output);
 
-    Map<String,Double> map = printLineItemsAndCalculateSalesTaxAndTot(output);
-    printsTheStateTax(output, map.get("totSalesTax"));
+    Map<String, Double> map = printLineItemsAndCalculateSalesTaxAndTot(output);
+    printsTheStateTax(output, map.get("totalSalesTax"));
 
-    printTotalAmount(output, map.get("tot"));
+    printTotalAmount(output, map.get("total"));
     return output.toString();
   }
 
   private Map<String, Double> printLineItemsAndCalculateSalesTaxAndTot(StringBuilder output) {
-    double totSalesTax = 0d;
-    double tot = 0d;
+    double totalSalesTax = 0d;
+    double totalPrice = 0d;
     for (LineItem lineItem : order.getLineItems()) {
       printLineItem(output, lineItem);
-
       double salesTax = getSalesTax(lineItem);
-      totSalesTax += salesTax;
-
-      tot = calculateTotalAmountOfLineItem(tot, lineItem, salesTax);
+      totalSalesTax += salesTax;
+      totalPrice = calculateTotalAmountOfLineItem(totalPrice, lineItem, salesTax);
     }
     Map<String, Double> map = new HashMap<>();
-    map.put("totSalesTax", totSalesTax);
-    map.put("tot", tot);
+    map.put("totalSalesTax", totalSalesTax);
+    map.put("totalPrice", totalPrice);
     return map;
+  }
+
+  private double calculateTotalSalesTax(List<LineItem> lineItems) {
+    return lineItems.stream()
+        .mapToDouble(item -> item.totalAmount() * TAX_RATE)
+        .sum();
+  }
+
+  private double calculateTotalAmount(List<LineItem> lineItems) {
+    return lineItems.stream()
+        .mapToDouble(item -> item.totalAmount() * TAX_RATE + item.totalAmount())
+        .sum();
   }
 
   private void printTotalAmount(StringBuilder output, double tot) {
@@ -61,14 +72,14 @@ public class OrderReceipt {
   }
 
   private void printLineItem(StringBuilder output, LineItem lineItem) {
-    output.append(lineItem.getDescription());
-    output.append('\t');
-    output.append(lineItem.getPrice());
-    output.append('\t');
-    output.append(lineItem.getQuantity());
-    output.append('\t');
-    output.append(lineItem.totalAmount());
-    output.append('\n');
+    output.append(lineItem.getDescription())
+        .append('\t')
+        .append(lineItem.getPrice())
+        .append('\t')
+        .append(lineItem.getQuantity())
+        .append('\t')
+        .append(lineItem.totalAmount())
+        .append('\n');
   }
 
   private void printNameAndAddressOfCustomer(StringBuilder output) {
