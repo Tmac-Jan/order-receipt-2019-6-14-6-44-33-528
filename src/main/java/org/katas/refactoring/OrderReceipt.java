@@ -17,8 +17,8 @@ public class OrderReceipt {
     StringBuilder output = new StringBuilder();
 
     printHeaders(output);
-
     printNameAndAddressOfCustomer(output);
+    printLineItem(output);
 
     Map<String, Double> map = printLineItemsAndCalculateSalesTaxAndTot(output);
     printsTheStateTax(output, map.get("totalSalesTax"));
@@ -31,7 +31,6 @@ public class OrderReceipt {
     double totalSalesTax = 0d;
     double totalPrice = 0d;
     for (LineItem lineItem : order.getLineItems()) {
-      printLineItem(output, lineItem);
       double salesTax = getSalesTax(lineItem);
       totalSalesTax += salesTax;
       totalPrice = calculateTotalAmountOfLineItem(totalPrice, lineItem, salesTax);
@@ -71,15 +70,17 @@ public class OrderReceipt {
     return lineItem.totalAmount() * TAX_RATE;
   }
 
-  private void printLineItem(StringBuilder output, LineItem lineItem) {
-    output.append(lineItem.getDescription())
-        .append('\t')
-        .append(lineItem.getPrice())
-        .append('\t')
-        .append(lineItem.getQuantity())
-        .append('\t')
-        .append(lineItem.totalAmount())
-        .append('\n');
+  private void printLineItem(StringBuilder output) {
+    order.getLineItems().stream().map(e->output
+        .append(e.getDescription())
+        .append("\t")
+        .append(e.getQuantity())
+        .append("\t")
+        .append(e.getQuantity())
+        .append("\t")
+        .append(e.totalAmount())
+        .append('\n')
+    );
   }
 
   private void printNameAndAddressOfCustomer(StringBuilder output) {
