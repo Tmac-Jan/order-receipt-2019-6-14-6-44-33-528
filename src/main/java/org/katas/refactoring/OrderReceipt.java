@@ -1,8 +1,6 @@
 package org.katas.refactoring;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OrderReceipt {
 
@@ -17,29 +15,18 @@ public class OrderReceipt {
     StringBuilder output = new StringBuilder();
 
     printHeaders(output);
+
     printNameAndAddressOfCustomer(output);
+
     printLineItem(output);
 
-    Map<String, Double> map = printLineItemsAndCalculateSalesTaxAndTot(output);
-    printsTheStateTax(output, map.get("totalSalesTax"));
+    printsTheStateTax(output,calculateTotalSalesTax(order.getLineItems()));
 
-    printTotalAmount(output, map.get("total"));
+    printTotalAmount(output,calculateTotalAmount(order.getLineItems()));
+
     return output.toString();
   }
 
-  private Map<String, Double> printLineItemsAndCalculateSalesTaxAndTot(StringBuilder output) {
-    double totalSalesTax = 0d;
-    double totalPrice = 0d;
-    for (LineItem lineItem : order.getLineItems()) {
-      double salesTax = getSalesTax(lineItem);
-      totalSalesTax += salesTax;
-      totalPrice = calculateTotalAmountOfLineItem(totalPrice, lineItem, salesTax);
-    }
-    Map<String, Double> map = new HashMap<>();
-    map.put("totalSalesTax", totalSalesTax);
-    map.put("totalPrice", totalPrice);
-    return map;
-  }
 
   private double calculateTotalSalesTax(List<LineItem> lineItems) {
     return lineItems.stream()
@@ -61,26 +48,18 @@ public class OrderReceipt {
     output.append("Sales Tax").append('\t').append(totSalesTx);
   }
 
-  private double calculateTotalAmountOfLineItem(double tot, LineItem lineItem, double salesTax) {
-    tot += lineItem.totalAmount() + salesTax;
-    return tot;
-  }
-
-  private double getSalesTax(LineItem lineItem) {
-    return lineItem.totalAmount() * TAX_RATE;
-  }
-
   private void printLineItem(StringBuilder output) {
-    order.getLineItems().stream().map(e->output
+    order.getLineItems().stream().forEach(e->output
         .append(e.getDescription())
         .append("\t")
-        .append(e.getQuantity())
+        .append(e.getPrice())
         .append("\t")
         .append(e.getQuantity())
         .append("\t")
         .append(e.totalAmount())
         .append('\n')
     );
+    System.out.println(output);
   }
 
   private void printNameAndAddressOfCustomer(StringBuilder output) {
