@@ -7,7 +7,7 @@ public class Order {
     private String customerAddress;
     private List<LineItem> lineItems;
 
-    public Order(String name, String address, List<LineItem> lineItem) {
+    public Order(String customerName, String customerAddress, List<LineItem> lineItems) {
         this.customerName = customerName;
         this.customerAddress = customerAddress;
         this.lineItems = lineItems;
